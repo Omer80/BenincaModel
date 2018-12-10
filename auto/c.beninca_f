@@ -1,0 +1,14 @@
+#  A periodically forced Beninca model DOI: 10.1073/pnas.1421968112
+unames = {1:'B0', 2:'BA', 3:'A', 4:'M', 5:'X', 6:'Y'}
+parnames = {1:'mB',2:'muB',3:'cBR',4:'mA',5:'muAR',6:'muAB',
+            7:'cAR',8:'cAB',9:'mM',11:'TT',13:'muM',14:'cM',
+            15:'alpha',16:'Tmean',17:'Tmax',18:'freq'}
+NDIM=   6, IPS =   2, IRS =   0, ILP =   1
+ICP =  [11]
+RL0 = -0.01, RL1 = 40.0
+NTST=  2400, NCOL=   4, IAD =   3, ISP =   2, ISW = -1, IPLT= 5, NBC= 0, NINT= 0
+NMX=   2000, NPR=  100, MXBF=   5, IID =   2, ITMX= 8, ITNW= 7, NWTN= 3, JAC= 0
+EPSL= 1e-07, EPSU = 1e-07, EPSS =0.0001, A0 = 0.0, A1 = 10000.0  
+DS  =  0.0001, DSMIN= 0.000001, DSMAX=   0.0001, IADS=   1
+NPAR = 26, THL =  {}, THU =  {}
+UZR =  {'alpha': [0.001,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]}
