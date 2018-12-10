@@ -6,7 +6,7 @@ parnames = {1:'mB',2:'muB',3:'cBR',4:'mA',5:'muAR',6:'muAB',
 NDIM=   6, IPS =   2, IRS =   0, ILP =   1
 ICP =  [11]
 RL0 = -0.01, RL1 = 40.0
-NTST=  2400, NCOL=   4, IAD =   3, ISP =   2, ISW = -1, IPLT= 5, NBC= 0, NINT= 0
+NTST=  2400, NCOL=   4, IAD =   3, ISP =   2, ISW = -1, IPLT= 7, NBC= 0, NINT= 0
 NMX=   2000, NPR=  100, MXBF=   5, IID =   2, ITMX= 8, ITNW= 7, NWTN= 3, JAC= 0
 EPSL= 1e-07, EPSU = 1e-07, EPSS =0.0001, A0 = 0.0, A1 = 10000.0  
 DS  =  0.0001, DSMIN= 0.000001, DSMAX=   0.0001, IADS=   1

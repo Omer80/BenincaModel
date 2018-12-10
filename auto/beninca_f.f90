@@ -50,7 +50,7 @@
       R = 1.0 - B0 - A - M
       
       F(1) = cBR*(B0+BA)*R-cAB*A*B0-cM*M*B0-mB*B0+Ft*mA*BA
-      F(2) = cAB*A*B0-cM*M*BA-mA*BA-Ft*mA*BA
+      F(2) = cAB*A*B0-cM*M*BA-mB*BA-Ft*mA*BA
       F(3) = cAR*A*R+cAB*A*B0-cM*M*A-Ft*mA*A
       F(4) = cM*M*(B0+A)-Ft*mM*M
       F(5) = X + (2*PI*freq)*Y - X*SS
@@ -91,7 +91,7 @@
       mM   = 0.017
       muM  = 0.061
       cM   = 0.078
-      alpha= 1.0
+      alpha= 0.0
       Tmean= 17.1
 !      Tmax = 20.5
       Tmax = 17.1
@@ -117,12 +117,12 @@
       PAR(18)= freq
       PAR(11)= TPI/freq
       
-      U(1)= 0.14281815
-      U(2)= 0.01536863
-      U(3)= 0.07513057
-      U(4)= 0.1052643
-      U(5)=SIN(TPI*T)
-      U(6)=COS(TPI*T)
+      U(1)= 0.16326531
+      U(2)= 0.01749869
+      U(3)= 0.05468341
+      U(4)= 0.11538462
+      U(5)=SIN(TPI*T-32/365)
+      U(6)=COS(TPI*T-32/365)
        
       END SUBROUTINE STPNT
 
