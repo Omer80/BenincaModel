@@ -1,0 +1,16 @@
+# Save results for bifurcation diagrams for a=0.0,0.5,1.0
+import numpy as np
+
+bif_kgc_unforced = run(c='kgc_unforced',e='kgc_unforced')
+plot bif_kgc_unforced
+
+contTT = run(c='beninca_f',e='beninca_f',NMX=10,ICP=[11])
+cont_unforced = run(contTT('EP1'),NMX=6000,DSMAX=0.1,ICP=['Tmax',11])
+#plot cont_unforced
+iota_ar = np.array([0.0001,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0])
+cont_iota=run(cont_unforced('UZ1'),ICP=['iota'],DS=0.00001,UZR={'iota':iota_ar},RL1=1.001)
+
+cont_p_iota_1_0 = run(cont_iota('UZ11'),NPR=100,ICP=['p'],DS='-',RL1=5,RL0=0)
+cont_p_iota_0_0 = run(cont_iota('UZ1'),NPR=100,ICP=['p'],DS='-',RL1=5,RL0=0)
+
+plot cont_p_iota_1_0+cont_p_iota_0_0
