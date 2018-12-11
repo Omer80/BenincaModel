@@ -18,8 +18,8 @@ def find_timeseries_peaks(fname,resolution,Tmax_index):
     m = BenincaModel(Es=Es_normal,Ps='auto/Beninca_set1.hdf5',Vs=None)
     t,sol_const = m.ode_integrate([0.5,0.5,0.5,0.5])
     init_cond = sol_const[-1]
-    int_finish=50*365
-    trim=10*365
+    int_finish=100*365
+    trim=20*365
     ito=0.0000
     parameters={}
     parameters['Tmax']=Tmax
@@ -28,8 +28,9 @@ def find_timeseries_peaks(fname,resolution,Tmax_index):
         return np.array([[ito,0.0,0.0,0.0],[0.0,ito,0.0,0.0],[0.0,0.0,ito,0.0],[0.0,0.0,0.0,ito]])
     step=0.01
     tspan = np.arange(0.0, int_finish+step,step)
+    print("Integrating for initial conditions:",init_cond)
     result = sdeint.itoint(m.rhs_ode, G, init_cond, tspan)
-    peaks=find_peaks(result[trim:,0])
+    peaks, _=find_peaks(result[trim:,0])
     Tmax_array = np.ones_like(peaks)*Tmax
     sfname = fname+str(Tmax_index)+".dat"
     np.savetxt(sfname,np.array([Tmax_array,peaks]))
