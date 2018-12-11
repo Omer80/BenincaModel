@@ -33,7 +33,7 @@ def find_timeseries_peaks(fname,resolution,Tmax_index):
     peaks, _=find_peaks(result[trim:,0])
     Tmax_array = np.ones_like(peaks)*Tmax
     sfname = fname+str(Tmax_index)+".dat"
-    np.savetxt(sfname,np.array([Tmax_array,peaks]))
+    np.savetxt(sfname,np.array([Tmax_array,result[trim:,0][peaks]]))
     print("Saved to",sfname)
     
 def main(args):
