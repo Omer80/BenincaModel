@@ -32,7 +32,7 @@ def find_timeseries_peaks(fname,resolution,Tmax_index):
     print("Integrating for initial conditions:",init_cond)
     result = sdeint.itoint(m.rhs_ode, G, init_cond, tspan)
     peaks_signal, _=find_peaks(result[trim:,0])
-    peaks_forcing, _=find_peaks(forcing[trim:,0])
+    peaks_forcing, _=find_peaks(forcing[trim:])
     Tmax_peaks_signal = np.ones_like(peaks_signal)*Tmax
     sfname = fname+str(Tmax_index)+".dat"
     np.savetxt(sfname,np.array([Tmax_peaks_signal,
