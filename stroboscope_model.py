@@ -28,12 +28,16 @@ def find_timeseries_peaks(fname,resolution,Tmax_index):
         return np.array([[ito,0.0,0.0,0.0],[0.0,ito,0.0,0.0],[0.0,0.0,ito,0.0],[0.0,0.0,0.0,ito]])
     step=0.01
     tspan = np.arange(0.0, int_finish+step,step)
+    forcing = -1.0*m.Ft(tspan)
     print("Integrating for initial conditions:",init_cond)
     result = sdeint.itoint(m.rhs_ode, G, init_cond, tspan)
-    peaks, _=find_peaks(result[trim:,0])
-    Tmax_array = np.ones_like(peaks)*Tmax
+    peaks_signal, _=find_peaks(result[trim:,0])
+    peaks_forcing, _=find_peaks(forcing[trim:,0])
+    Tmax_peaks_signal = np.ones_like(peaks_signal)*Tmax
     sfname = fname+str(Tmax_index)+".dat"
-    np.savetxt(sfname,np.array([Tmax_array,result[trim:,0][peaks]]))
+    np.savetxt(sfname,np.array([Tmax_peaks_signal,
+                                result[trim:,0][peaks_signal],
+                                result[trim:,-2][peaks_forcing]]).T)
     print("Saved to",sfname)
     
 def main(args):
