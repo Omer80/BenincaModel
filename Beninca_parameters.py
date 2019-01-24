@@ -42,7 +42,7 @@ if __name__ == '__main__':
     print("Nondimensional:",)
     print(par)
 #    print "conv P=",par['conv_P']
-    saveParmSet('Beninca_set1',par)
+    saveParmSet('Beninca_set2',par)
 #    import numpy as np
 #    p=par
 #    a = np.array([p['lamb_max'],p['lamb_min'],p['eta'],
