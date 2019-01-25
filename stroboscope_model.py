@@ -53,13 +53,13 @@ def save_find_timeseries_peaks(fname,var_index,ito,resolution,Tmax_index):
     print("Saved to",sfname)
 
 def find_min_max(tspan,result,forcing,trim):
-    barnicles=(result[:,0]+result[:,1])[trim:]*100.0
+    series = result[trim:]
     t_plot = tspan[trim:]
-    barnicles_dt = np.gradient(barnicles)
-    zero_crossings = np.where(np.diff(np.sign(barnicles_dt)))[0]
-    return t_plot[zero_crossings]/365,barnicles[zero_crossings]
+    series_dt = np.gradient(series)
+    zero_crossings = np.where(np.diff(np.sign(series_dt)))[0]
+    return t_plot[zero_crossings]/365,series[zero_crossings]
 
-def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=10):
+def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20):
     step=0.1
     int_finish=int(60*365)
     trim=int(40*365)
@@ -68,20 +68,34 @@ def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=10):
     Tmax_array = np.linspace(m.p['Tmean'],Tmax_max,resolution)
     init_cond = calc_for_constant(m)
     barnicles_arr=[]
+    crustose_arr=[]
+    mussels_arr=[]
 #    t_plot_arr=[]
     alpha=1.0
     for i,Tmax in enumerate(Tmax_array):
         print("Calculating for Tmax=",Tmax)
         tspan,result,forcing=calc_for_oscillation_with_Ito(m,init_cond,alpha,Tmax,ito,int_finish,step)
-        t_plot,barnicles=find_min_max(tspan,result,forcing,trim)
+        barnicles=(result[:,0]+result[:,1])[trim:]*100.0
+        crustose=(result[:,2])[trim:]*100.0
+        mussels=(result[:,3])[trim:]*100.0
+        t_plot,barnicles=find_min_max(tspan,barnicles,forcing,trim)
+        t_plot,crustose=find_min_max(tspan,crustose,forcing,trim)
+        t_plot,mussels=find_min_max(tspan,mussels,forcing,trim)
         if len(barnicles)>max_samples:
             barnicles=np.random.choice(barnicles,max_samples)
+            crustose=np.random.choice(crustose,max_samples)
+            mussels=np.random.choice(mussels,max_samples)
         barnicles_arr.append(barnicles)
+        crustose_arr.append(crustose)
+        mussels_arr.append(mussels)
 #        t_plot_arr.append(t_plot)
-    data = {"Tmax":Tmax_array,"B":barnicles_arr}
+    data = {"Tmax":Tmax_array,
+            "B":barnicles_arr,
+            "C":crustose_arr,
+            "M":mussels_arr}
     dd.save(fname+".hdf5",data)
     
-def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=10):
+def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
     step=0.1
     int_finish=int(60*365)
     trim=int(40*365)
@@ -93,16 +107,30 @@ def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=10):
     alpha_array = np.linspace(0,1.0,resolution)
     init_cond = calc_for_constant(m)
     barnicles_arr=[]
+    crustose_arr=[]
+    mussels_arr=[]
 #    t_plot_arr=[]
     for i,alpha in enumerate(alpha_array):
         print("Calculating for alpha=",alpha)
         tspan,result,forcing=calc_for_oscillation_with_Ito(m,init_cond,alpha,Tmax,ito,int_finish,step)
-        t_plot,barnicles=find_min_max(tspan,result,forcing,trim)
+        barnicles=(result[:,0]+result[:,1])[trim:]*100.0
+        crustose=(result[:,2])[trim:]*100.0
+        mussels=(result[:,3])[trim:]*100.0
+        t_plot,barnicles=find_min_max(tspan,barnicles,forcing,trim)
+        t_plot,crustose=find_min_max(tspan,crustose,forcing,trim)
+        t_plot,mussels=find_min_max(tspan,mussels,forcing,trim)
         if len(barnicles)>max_samples:
             barnicles=np.random.choice(barnicles,max_samples)
+            crustose=np.random.choice(crustose,max_samples)
+            mussels=np.random.choice(mussels,max_samples)
         barnicles_arr.append(barnicles)
+        crustose_arr.append(crustose)
+        mussels_arr.append(mussels)
 #        t_plot_arr.append(t_plot)
-    data = {"alpha":alpha_array,"B":barnicles_arr}
+    data = {"alpha":alpha_array,
+            "B":barnicles_arr,
+            "C":crustose_arr,
+            "M":mussels_arr}
     dd.save(fname+".hdf5",data)
 
 def main(args):
