@@ -70,14 +70,14 @@ def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20):
     trim=int(40*365)
     #finish = int(int_finish*1.0)
     m = BenincaModel(Es=Es_normal,Ps='auto/Beninca_set1.hdf5',Vs=None)
-    Tmax_array = np.linspace(m.p['Tmean'],Tmax_max,resolution)[1:]
+    Tmax_array = np.linspace(m.p['Tmean'],Tmax_max,resolution)
     init_cond = calc_for_constant(m)
     barnicles_arr=[init_cond[0]+init_cond[1]]
     crustose_arr=[init_cond[2]]
     mussels_arr=[init_cond[3]]
 #    t_plot_arr=[]
     alpha=1.0
-    for i,Tmax in enumerate(Tmax_array):
+    for i,Tmax in enumerate(Tmax_array[1:]):
         print("Calculating for Tmax=",Tmax)
         tspan,result,forcing=calc_for_oscillation_with_Ito(m,init_cond,alpha,Tmax,ito,int_finish,step)
         barnicles=(result[:,0]+result[:,1])[trim:]*100.0
@@ -109,13 +109,13 @@ def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
     Ps['Tmax']=Tmax
     Ps['alpha']=0.0
     m = BenincaModel(Es=Es_normal,Ps=Ps,Vs=None)
-    alpha_array = np.linspace(0,1.0,resolution)[1:]
+    alpha_array = np.linspace(0,1.0,resolution)
     init_cond = calc_for_constant(m)
     barnicles_arr=[init_cond[0]+init_cond[1]]
     crustose_arr=[init_cond[2]]
     mussels_arr=[init_cond[3]]
 #    t_plot_arr=[]
-    for i,alpha in enumerate(alpha_array):
+    for i,alpha in enumerate(alpha_array[1:]):
         print("Calculating for alpha=",alpha)
         tspan,result,forcing=calc_for_oscillation_with_Ito(m,init_cond,alpha,Tmax,ito,int_finish,step)
         barnicles=(result[:,0]+result[:,1])[trim:]*100.0
