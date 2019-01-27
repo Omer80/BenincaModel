@@ -72,9 +72,9 @@ def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20):
     m = BenincaModel(Es=Es_normal,Ps='auto/Beninca_set1.hdf5',Vs=None)
     Tmax_array = np.linspace(m.p['Tmean'],Tmax_max,resolution)
     init_cond = calc_for_constant(m)
-    barnicles_arr=[init_cond[0]+init_cond[1]]
-    crustose_arr=[init_cond[2]]
-    mussels_arr=[init_cond[3]]
+    barnicles_arr=[init_cond[0]*100.0+init_cond[1]*100.0]
+    crustose_arr=[init_cond[2]*100.0]
+    mussels_arr=[init_cond[3]*100.0]
 #    t_plot_arr=[]
     alpha=1.0
     for i,Tmax in enumerate(Tmax_array[1:]):
@@ -111,9 +111,9 @@ def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
     m = BenincaModel(Es=Es_normal,Ps=Ps,Vs=None)
     alpha_array = np.linspace(0,1.0,resolution)
     init_cond = calc_for_constant(m)
-    barnicles_arr=[init_cond[0]+init_cond[1]]
-    crustose_arr=[init_cond[2]]
-    mussels_arr=[init_cond[3]]
+    barnicles_arr=[init_cond[0]*100.0+init_cond[1]*100.0]
+    crustose_arr=[init_cond[2]*100.0]
+    mussels_arr=[init_cond[3]*100.0]
 #    t_plot_arr=[]
     for i,alpha in enumerate(alpha_array[1:]):
         print("Calculating for alpha=",alpha)
