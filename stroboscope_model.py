@@ -52,15 +52,17 @@ def save_find_timeseries_peaks(fname,var_index,ito,resolution,Tmax_index):
     np.savetxt(sfname,data)
     print("Saved to",sfname)
 
-def find_min_max(tspan,result,forcing,trim):
+def find_min_max(tspan,result,trim):
     series = result[trim:]
     t_plot = tspan[trim:]
     series_dt = np.gradient(series)
     series_ddt = np.gradient(series_dt)
-    zero_crossings = np.diff(np.sign(series_dt))
-    maximas = np.where(zero_crossings&(series_ddt<0))[0]
-    minimas = np.where(zero_crossings&(series_ddt>=0))[0]
-    return t_plot[zero_crossings]/365,series[minimas],series[maximas]
+    zero_crossings_idx = np.where(np.diff(np.sign(series_dt)))[0]
+    zero_crossings=series[zero_crossings_idx]
+    series_ddt_zero_crossings=series_ddt[zero_crossings_idx]
+    maximas = zero_crossings[np.where(series_ddt_zero_crossings<0)[0]]
+    minimas = zero_crossings[np.where(series_ddt_zero_crossings>=0)[0]]
+    return t_plot[zero_crossings_idx]/365,minimas,maximas
 
 def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20):
     step=0.1
@@ -81,9 +83,9 @@ def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20):
         barnicles=(result[:,0]+result[:,1])[trim:]*100.0
         crustose=(result[:,2])[trim:]*100.0
         mussels=(result[:,3])[trim:]*100.0
-        t_plot,barnicles_minimas,barnicles=find_min_max(tspan,barnicles,forcing,trim)
-        t_plot,crustose_minimas,crustose=find_min_max(tspan,crustose,forcing,trim)
-        t_plot,mussels_minimas,mussels=find_min_max(tspan,mussels,forcing,trim)
+        t_plot,barnicles_minimas,barnicles=find_min_max(tspan,barnicles,trim)
+        t_plot,crustose_minimas,crustose=find_min_max(tspan,crustose,trim)
+        t_plot,mussels_minimas,mussels=find_min_max(tspan,mussels,trim)
         if len(barnicles)>max_samples:
             barnicles=np.random.choice(barnicles,max_samples)
             crustose=np.random.choice(crustose,max_samples)
@@ -119,9 +121,9 @@ def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
         barnicles=(result[:,0]+result[:,1])[trim:]*100.0
         crustose=(result[:,2])[trim:]*100.0
         mussels=(result[:,3])[trim:]*100.0
-        t_plot,barnicles_minimas,barnicles=find_min_max(tspan,barnicles,forcing,trim)
-        t_plot,crustose_minimas,crustose=find_min_max(tspan,crustose,forcing,trim)
-        t_plot,mussels_minimas,mussels=find_min_max(tspan,mussels,forcing,trim)
+        t_plot,barnicles_minimas,barnicles=find_min_max(tspan,barnicles,trim)
+        t_plot,crustose_minimas,crustose=find_min_max(tspan,crustose,trim)
+        t_plot,mussels_minimas,mussels=find_min_max(tspan,mussels,trim)
         if len(barnicles)>max_samples:
             barnicles=np.random.choice(barnicles,max_samples)
             crustose=np.random.choice(crustose,max_samples)
