@@ -56,8 +56,11 @@ def find_min_max(tspan,result,forcing,trim):
     series = result[trim:]
     t_plot = tspan[trim:]
     series_dt = np.gradient(series)
-    zero_crossings = np.where(np.diff(np.sign(series_dt)))[0]
-    return t_plot[zero_crossings]/365,series[zero_crossings]
+    series_ddt = np.gradient(series_dt)
+    zero_crossings = np.diff(np.sign(series_dt))
+    maximas = np.where(zero_crossings&(series_ddt<0))[0]
+    minimas = np.where(zero_crossings&(series_ddt>=0))[0]
+    return t_plot[zero_crossings]/365,series[minimas],series[maximas]
 
 def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20):
     step=0.1
@@ -65,11 +68,11 @@ def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20):
     trim=int(40*365)
     #finish = int(int_finish*1.0)
     m = BenincaModel(Es=Es_normal,Ps='auto/Beninca_set1.hdf5',Vs=None)
-    Tmax_array = np.linspace(m.p['Tmean'],Tmax_max,resolution)
+    Tmax_array = np.linspace(m.p['Tmean'],Tmax_max,resolution)[1:]
     init_cond = calc_for_constant(m)
-    barnicles_arr=[]
-    crustose_arr=[]
-    mussels_arr=[]
+    barnicles_arr=[init_cond[0]+init_cond[1]]
+    crustose_arr=[init_cond[2]]
+    mussels_arr=[init_cond[3]]
 #    t_plot_arr=[]
     alpha=1.0
     for i,Tmax in enumerate(Tmax_array):
@@ -78,9 +81,9 @@ def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20):
         barnicles=(result[:,0]+result[:,1])[trim:]*100.0
         crustose=(result[:,2])[trim:]*100.0
         mussels=(result[:,3])[trim:]*100.0
-        t_plot,barnicles=find_min_max(tspan,barnicles,forcing,trim)
-        t_plot,crustose=find_min_max(tspan,crustose,forcing,trim)
-        t_plot,mussels=find_min_max(tspan,mussels,forcing,trim)
+        t_plot,barnicles_minimas,barnicles=find_min_max(tspan,barnicles,forcing,trim)
+        t_plot,crustose_minimas,crustose=find_min_max(tspan,crustose,forcing,trim)
+        t_plot,mussels_minimas,mussels=find_min_max(tspan,mussels,forcing,trim)
         if len(barnicles)>max_samples:
             barnicles=np.random.choice(barnicles,max_samples)
             crustose=np.random.choice(crustose,max_samples)
@@ -104,11 +107,11 @@ def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
     Ps['Tmax']=Tmax
     Ps['alpha']=0.0
     m = BenincaModel(Es=Es_normal,Ps=Ps,Vs=None)
-    alpha_array = np.linspace(0,1.0,resolution)
+    alpha_array = np.linspace(0,1.0,resolution)[1:]
     init_cond = calc_for_constant(m)
-    barnicles_arr=[]
-    crustose_arr=[]
-    mussels_arr=[]
+    barnicles_arr=[init_cond[0]+init_cond[1]]
+    crustose_arr=[init_cond[2]]
+    mussels_arr=[init_cond[3]]
 #    t_plot_arr=[]
     for i,alpha in enumerate(alpha_array):
         print("Calculating for alpha=",alpha)
@@ -116,9 +119,9 @@ def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
         barnicles=(result[:,0]+result[:,1])[trim:]*100.0
         crustose=(result[:,2])[trim:]*100.0
         mussels=(result[:,3])[trim:]*100.0
-        t_plot,barnicles=find_min_max(tspan,barnicles,forcing,trim)
-        t_plot,crustose=find_min_max(tspan,crustose,forcing,trim)
-        t_plot,mussels=find_min_max(tspan,mussels,forcing,trim)
+        t_plot,barnicles_minimas,barnicles=find_min_max(tspan,barnicles,forcing,trim)
+        t_plot,crustose_minimas,crustose=find_min_max(tspan,crustose,forcing,trim)
+        t_plot,mussels_minimas,mussels=find_min_max(tspan,mussels,forcing,trim)
         if len(barnicles)>max_samples:
             barnicles=np.random.choice(barnicles,max_samples)
             crustose=np.random.choice(crustose,max_samples)
