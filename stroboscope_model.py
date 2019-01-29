@@ -138,12 +138,8 @@ def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
             "M":mussels_arr}
     dd.save(fname+".hdf5",data)
 
-def plot_ito_integration(Tmax,alpha,ito,max_time,trim,step,figsize):
-    import matplotlib.pyplot as plt
-    import matplotlib.gridspec as gridspec
-    idx_finish=int(max_time*365)
-#    idx_trim=int(trim*365)
-    #finish = int(int_finish*1.0)
+
+def integrate_from_steady_state(alpha,Tmax,ito,idx_finish,step):
     Ps=dd.load('auto/Beninca_set1.hdf5')
     Ps['Tmax']=Tmax
     Ps['alpha']=0.0
@@ -152,13 +148,21 @@ def plot_ito_integration(Tmax,alpha,ito,max_time,trim,step,figsize):
     print("Initial condition:",init_cond)
     print("Integrating with SDEINT")
     tspan,result,forcing=calc_for_oscillation_with_Ito(m,init_cond,alpha,Tmax,ito,idx_finish,step)
+    forcing_tspan = m.Ft(tspan)
+    return tspan,result,forcing,forcing_tspan
+
+def plot_ito_integration(Tmax,alpha,ito,max_time,trim,step,figsize):
+    import matplotlib.pyplot as plt
+    idx_finish=int(max_time*365)
+    tspan,result,forcing,forcing_tspan=integrate_from_steady_state(alpha,Tmax,ito,idx_finish,step)
+#    idx_trim=int(trim*365)
+    #finish = int(int_finish*1.0)
     fig,ax=plt.subplots(1,2,figsize=(figsize*1.618,figsize),constrained_layout=True)
-    gs = gridspec.GridSpec(3, 3)
+    gs = fig.add_gridspec(3, 3)
     ax3 = plt.subplot(gs[2:,:-1])
     ax1 = plt.subplot(gs[0, :-1])#, sharey=ax3, sharex=ax3)
     ax2 = plt.subplot(gs[1, :-1])#, sharey=ax3, sharex=ax3)
     ax4 = plt.subplot(gs[:, -1])
-    forcing_tspan = m.Ft(tspan)
     plot_forcing_tspan = 10.0*forcing_tspan/np.amax(forcing_tspan)
     ax1.plot(tspan/365-trim,(result[:,0]+result[:,1])*100.0,'b',label=r'Barnacles')
     ax2.plot(tspan/365-trim,result[:,2]*100.0,'g',label=r'Algae')
