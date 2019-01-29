@@ -38,7 +38,7 @@ from scipy.fftpack import fftn, ifftn
 #from utilities import handle_netcdf as hn
 import deepdish.io as dd
 
-Es_normal={'rhs':"Beninca_forced",
+Es_normal={'rhs':"Beninca_forced_logistic",
         'n':(1024,),
         'l':(256.0,),
         'bc':"neumann",
