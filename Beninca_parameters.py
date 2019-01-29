@@ -5,11 +5,11 @@ dimpar = {'mB'   : 0.003,
           'mA'   : 0.013,
           'muAR' : 0.008,
           'muAB' : 0.036,
-          'cAR'  : 0.01,
-          'cAB'  : 0.01,
-          'mM'   : 0.03,
+          'cAR'  : 0.021,
+          'cAB'  : 0.049,
+          'mM'   : 0.017,
           'muM'  : 0.061,
-          'cM'   : 0.03,
+          'cM'   : 0.078,
           'alpha': 0.0,
           'Tmean': 17.1,
           'Tmax' : 25.0,#20.5 from the paper
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     print("Nondimensional:",)
     print(par)
 #    print "conv P=",par['conv_P']
-    saveParmSet('Beninca_set2',par)
+    saveParmSet('Beninca_set3',par)
 #    import numpy as np
 #    p=par
 #    a = np.array([p['lamb_max'],p['lamb_min'],p['eta'],

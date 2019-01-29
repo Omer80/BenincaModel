@@ -11,8 +11,7 @@ import sdeint
 from scipy.signal import find_peaks
 from BenincaModel import BenincaModel,Es_normal
 import deepdish.io as dd
-Ps_normal='auto/Beninca_set1.hdf5'
-#Ps_normal='auto/Beninca_set2.hdf5'
+Ps_normal='auto/Beninca_set3.hdf5'
 
 def calc_for_constant(m):
     t,sol_const = m.ode_integrate([0.1,0.1,0.1,0.1])
