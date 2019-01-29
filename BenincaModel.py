@@ -53,7 +53,7 @@ Es_normal={'rhs':"Beninca_forced",
 
 def main():
     global m,p
-    m = BenincaModel(Es=Es_normal,Ps='auto/Beninca_set2.hdf5',Vs=None)
+    m = BenincaModel(Es=Es_normal,Ps='auto/Beninca_set1.hdf5',Vs=None)
     return 0
 
 class BenincaModel(object):
