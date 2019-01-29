@@ -53,7 +53,7 @@ Es_normal={'rhs':"Beninca_forced",
 
 def main():
     global m,p
-    m = BenincaModel(Es=Es_normal,Ps='auto/Beninca_set1.hdf5',Vs=None)
+    m = BenincaModel(Es=Es_normal,Ps='auto/Beninca_set2.hdf5',Vs=None)
     return 0
 
 class BenincaModel(object):
@@ -104,6 +104,7 @@ class BenincaModel(object):
     """ Setting up model equations """
     def set_equations(self):
         B0,BA,A,M,t = symbols('B0 BA A M t')
+        self.var_symbols = {'B0':B0,'BA':BA,'A':A,'M':M,'t':t}
         self.Ps_symbols={}
         for key in list(self.p.keys()):
             self.Ps_symbols[key] = symbols(key)

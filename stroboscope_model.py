@@ -11,9 +11,11 @@ import sdeint
 from scipy.signal import find_peaks
 from BenincaModel import BenincaModel,Es_normal
 import deepdish.io as dd
+#Ps_normal='auto/Beninca_set1.hdf5'
+Ps_normal='auto/Beninca_set2.hdf5'
 
 def calc_for_constant(m):
-    t,sol_const = m.ode_integrate([0.5,0.5,0.5,0.5])
+    t,sol_const = m.ode_integrate([0.1,0.1,0.1,0.1])
     return sol_const[-1]
 def calc_for_oscillation_with_Ito(m,init_cond,alpha,Tmax,ito,int_finish,step):
     tspan = np.arange(0.0, int_finish+step,step)
@@ -31,7 +33,7 @@ def find_timeseries_peaks(fname,var_index,ito,resolution,Tmax_index):
     Tmax_array = np.linspace(17.5,25,100)
     Tmax = Tmax_array[Tmax_index-1]
     print("Calculating for Tmax=",Tmax)
-    m = BenincaModel(Es=Es_normal,Ps='auto/Beninca_set1.hdf5',Vs=None)
+    m = BenincaModel(Es=Es_normal,Ps=Ps_normal,Vs=None)
     init_cond = calc_for_constant(m)
     int_finish=100*365
     trim=20*365
@@ -69,7 +71,7 @@ def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20):
     int_finish=int(60*365)
     trim=int(40*365)
     #finish = int(int_finish*1.0)
-    m = BenincaModel(Es=Es_normal,Ps='auto/Beninca_set1.hdf5',Vs=None)
+    m = BenincaModel(Es=Es_normal,Ps=Ps_normal,Vs=None)
     Tmax_array = np.linspace(m.p['Tmean'],Tmax_max,resolution)
     init_cond = calc_for_constant(m)
     barnicles_arr=[init_cond[0]*100.0+init_cond[1]*100.0]
@@ -105,7 +107,7 @@ def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
     int_finish=int(60*365)
     trim=int(40*365)
     #finish = int(int_finish*1.0)
-    Ps=dd.load('auto/Beninca_set1.hdf5')
+    Ps=dd.load(Ps_normal)
     Ps['Tmax']=Tmax
     Ps['alpha']=0.0
     m = BenincaModel(Es=Es_normal,Ps=Ps,Vs=None)
@@ -140,7 +142,7 @@ def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
 
 
 def integrate_from_steady_state(alpha,Tmax,ito,idx_finish,step):
-    Ps=dd.load('auto/Beninca_set1.hdf5')
+    Ps=dd.load(Ps_normal)
     Ps['Tmax']=Tmax
     Ps['alpha']=0.0
     m = BenincaModel(Es=Es_normal,Ps=Ps,Vs=None)
@@ -184,7 +186,7 @@ def plot_ito_integration(Tmax,alpha,ito,max_time,trim,step,figsize):
     ax2.set_ylim([-10,110])
     ax3.set_ylim([-10,110])
     # FFT
-    forcing = m.Ft(tspan)
+#    forcing = m.Ft(tspan)
     #print(len(forcing))
     trimfft = int(len(forcing)*(2.0/5.0)) # the index from which to trim the time series to clean transients
     #print(trim)

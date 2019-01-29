@@ -5,14 +5,14 @@ dimpar = {'mB'   : 0.003,
           'mA'   : 0.013,
           'muAR' : 0.008,
           'muAB' : 0.036,
-          'cAR'  : 0.021,
-          'cAB'  : 0.049,
-          'mM'   : 0.017,
+          'cAR'  : 0.01,
+          'cAB'  : 0.01,
+          'mM'   : 0.03,
           'muM'  : 0.061,
-          'cM'   : 0.078,
-          'alpha': 1.0,
+          'cM'   : 0.03,
+          'alpha': 0.0,
           'Tmean': 17.1,
-          'Tmax' : 17.1,#20.5 from the paper
+          'Tmax' : 25.0,#20.5 from the paper
           }
 
 def update_par():
