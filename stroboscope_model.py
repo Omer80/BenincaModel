@@ -191,11 +191,11 @@ def plot_ito_integration(Tmax,alpha,ito,max_time,trim,step,figsize):
     trimfft = int(len(forcing)*(2.0/5.0)) # the index from which to trim the time series to clean transients
     #print(trim)
     frq = np.fft.fftfreq(forcing[-trimfft:].size,d=0.01/365)
-    fft_forcing = np.absolute((np.fft.fft(forcing[-trimfft:])))
+#    fft_forcing = np.absolute((np.fft.fft(forcing[-trimfft:])))
     fft_signal_B  = np.absolute((np.fft.fft(result[-trimfft:,0]+result[-trimfft:,1])))
     fft_signal_M  = np.absolute((np.fft.fft(result[-trimfft:,-1])))
     normalize_fft = np.amax(fft_signal_B[1:])
-    ax4.plot(frq[1:],fft_forcing[1:]/np.amax(fft_forcing[1:]),'m:',label=r'forcing')
+#    ax4.plot(frq[1:],fft_forcing[1:]/np.amax(fft_forcing[1:]),'m:',label=r'forcing')
     ax4.plot(frq[1:],fft_signal_B[1:]/normalize_fft,'b',label=r'Barnacles')
     ax4.plot(frq[1:],fft_signal_M[1:]/normalize_fft,'r',label=r'Mussels')
     ax4.set_xlim([0.1,2.0])
