@@ -99,7 +99,7 @@ def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20):
             "C":crustose_arr,
             "M":mussels_arr}
     dd.save(fname+".hdf5",data)
-    
+
 def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
     step=0.1
     int_finish=int(60*365)
@@ -138,6 +138,71 @@ def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
             "M":mussels_arr}
     dd.save(fname+".hdf5",data)
 
+def plot_ito_integration(Tmax,alpha,ito,max_time,trim,step,figsize):
+    import matplotlib.pyplot as plt
+    import matplotlib.gridspec as gridspec
+    idx_finish=int(max_time*365)
+#    idx_trim=int(trim*365)
+    #finish = int(int_finish*1.0)
+    Ps=dd.load('auto/Beninca_set1.hdf5')
+    Ps['Tmax']=Tmax
+    Ps['alpha']=0.0
+    m = BenincaModel(Es=Es_normal,Ps=Ps,Vs=None)
+    init_cond = calc_for_constant(m)
+    print("Initial condition:",init_cond)
+    print("Integrating with SDEINT")
+    tspan,result,forcing=calc_for_oscillation_with_Ito(m,init_cond,alpha,Tmax,ito,idx_finish,step)
+    fig,ax=plt.subplots(1,2,figsize=(figsize*1.618,figsize),constrained_layout=True)
+    gs = gridspec.GridSpec(3, 3)
+    ax3 = plt.subplot(gs[2:,:-1])
+    ax1 = plt.subplot(gs[0, :-1])#, sharey=ax3, sharex=ax3)
+    ax2 = plt.subplot(gs[1, :-1])#, sharey=ax3, sharex=ax3)
+    ax4 = plt.subplot(gs[:, -1])
+    forcing_tspan = m.Ft(tspan)
+    plot_forcing_tspan = 10.0*forcing_tspan/np.amax(forcing_tspan)
+    ax1.plot(tspan/365-trim,(result[:,0]+result[:,1])*100.0,'b',label=r'Barnacles')
+    ax2.plot(tspan/365-trim,result[:,2]*100.0,'g',label=r'Algae')
+    ax3.plot(tspan/365-trim,result[:,3]*100.0,'r',label=r'Mussels')
+    ax1.plot(tspan/365-trim,plot_forcing_tspan,'m:',label=r'forcing',lw=1)
+    ax2.plot(tspan/365-trim,plot_forcing_tspan,'m:',label=r'forcing',lw=1)
+    ax3.plot(tspan/365-trim,plot_forcing_tspan,'m:',label=r'forcing',lw=1)
+    ax1.set_ylabel(r'Barnacles $[\%]$')
+    ax1.axes.xaxis.set_ticklabels([])
+    ax2.axes.xaxis.set_ticklabels([])
+    #ax3.axes.xaxis.set_ticklabels(np.arange(30,51,1))
+    ax2.set_ylabel(r'Algae $[\%]$')
+    ax3.set_ylabel(r'Mussels $[\%]$')
+    ax3.set_xlabel(r'Time $[years]$')
+    ax1.set_xlim([0,trim])
+    ax2.set_xlim([0,trim])
+    ax3.set_xlim([0,trim])
+    ax1.set_ylim([-10,110])
+    ax2.set_ylim([-10,110])
+    ax3.set_ylim([-10,110])
+    # FFT
+    forcing = m.Ft(tspan)
+    #print(len(forcing))
+    trimfft = int(len(forcing)*(2.0/5.0)) # the index from which to trim the time series to clean transients
+    #print(trim)
+    frq = np.fft.fftfreq(forcing[-trimfft:].size,d=0.01/365)
+    fft_forcing = np.absolute((np.fft.fft(forcing[-trimfft:])))
+    fft_signal_B  = np.absolute((np.fft.fft(result[-trimfft:,0]+result[-trimfft:,1])))
+    fft_signal_M  = np.absolute((np.fft.fft(result[-trimfft:,-1])))
+    normalize_fft = np.amax(fft_signal_B[1:])
+    ax4.plot(frq[1:],fft_forcing[1:]/np.amax(fft_forcing[1:]),'m:',label=r'forcing')
+    ax4.plot(frq[1:],fft_signal_B[1:]/normalize_fft,'b',label=r'Barnacles')
+    ax4.plot(frq[1:],fft_signal_M[1:]/normalize_fft,'r',label=r'Mussels')
+    ax4.set_xlim([0.1,2.0])
+    ax4.set_ylim([-0.01,1.2])
+    ax4.set_xlabel(r'freq $[1/years]$')
+    #ax[0].legend(loc='upper left')
+    ax4.legend(loc='upper right')
+    #ax[0].legend(loc='upper left')
+    #ax[1].legend(loc='upper left')
+    base_fname='results/Beninca_Ito_and_fft_Tmax{:3.2f}_ito{:5.4f}'.format(Tmax,ito).replace('.','_')
+    plt.savefig(base_fname+'.pdf')
+    plt.savefig(base_fname+'.png')
+
 def main(args):
     if args.find_peaks:
         save_find_timeseries_peaks(args.fname,args.var_index,args.ito,
@@ -148,6 +213,11 @@ def main(args):
     elif args.bif_B_min_max_to_alpha:
         bif_B_min_max_to_alpha(args.Tmax,args.ito,
                                args.resolution,args.fname)
+    elif args.plot_ito_integration:
+        plot_ito_integration(args.Tmax,args.alpha,args.ito,
+                             args.max_time,args.trim,
+                             args.step,args.figsize)
+
 
 def add_parser_arguments(parser):
     parser.add_argument("-f", "--fname",
@@ -160,6 +230,11 @@ def add_parser_arguments(parser):
                         dest="verbose",
                         default=False,
                         help="Turn on debuging messages")
+    parser.add_argument("--plot_ito_integration",
+                        action="store_true",
+                        dest="plot_ito_integration",
+                        default=False,
+                        help="Integrate the system with a given ito stochastic strength and plot")
     parser.add_argument("--find_peaks",
                         action="store_true",
                         dest="find_peaks",
@@ -190,6 +265,26 @@ def add_parser_arguments(parser):
                         type=float,
                         default=0.0,
                         help='Ito diagonal noise')
+    parser.add_argument('--max_time',
+                        dest='max_time',
+                        type=float,
+                        default=50.0,
+                        help='Time for integration')
+    parser.add_argument('--trim',
+                        dest='trim',
+                        type=float,
+                        default=20.0,
+                        help='Years to trim at the end of the time series')
+    parser.add_argument('--step',
+                        dest='step',
+                        type=float,
+                        default=0.01,
+                        help='Step size for integration')
+    parser.add_argument('--figsize',
+                        dest='figsize',
+                        type=float,
+                        default=6.0,
+                        help='figsize for ploting')
     parser.add_argument('--Tmax_max',
                         dest='Tmax_max',
                         type=float,
@@ -200,6 +295,11 @@ def add_parser_arguments(parser):
                         type=float,
                         default=20.5,
                         help='Tmax in the alpha bifurcation')
+    parser.add_argument('--alpha',
+                        dest='alpha',
+                        type=float,
+                        default=1.0,
+                        help='alpha parameter')
     parser.add_argument('--resolution',
                         dest='resolution',
                         type=int,
