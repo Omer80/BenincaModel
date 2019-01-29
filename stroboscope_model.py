@@ -76,6 +76,12 @@ def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20):
     barnicles_arr=[init_cond[0]*100.0+init_cond[1]*100.0]
     crustose_arr=[init_cond[2]*100.0]
     mussels_arr=[init_cond[3]*100.0]
+    mean_B = np.zeros_like(Tmax_array)
+    mean_A = np.zeros_like(Tmax_array)
+    mean_M = np.zeros_like(Tmax_array)
+    mean_B[0]=np.mean(init_cond[0]*100.0+init_cond[1]*100.0)
+    mean_A[0]=np.mean(init_cond[2]*100.0)
+    mean_M[0]=np.mean(init_cond[3]*100.0)
 #    t_plot_arr=[]
     alpha=1.0
     for i,Tmax in enumerate(Tmax_array[1:]):
@@ -84,6 +90,9 @@ def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20):
         barnicles=(result[:,0]+result[:,1])[trim:]*100.0
         crustose=(result[:,2])[trim:]*100.0
         mussels=(result[:,3])[trim:]*100.0
+        mean_B[i+1]=np.mean(barnicles)
+        mean_A[i+1]=np.mean(crustose)
+        mean_M[i+1]=np.mean(mussels)
         t_plot,barnicles_minimas,barnicles=find_min_max(tspan,barnicles,trim)
         t_plot,crustose_minimas,crustose=find_min_max(tspan,crustose,trim)
         t_plot,mussels_minimas,mussels=find_min_max(tspan,mussels,trim)
@@ -98,7 +107,8 @@ def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20):
     data = {"Tmax":Tmax_array,
             "B":barnicles_arr,
             "C":crustose_arr,
-            "M":mussels_arr}
+            "M":mussels_arr,
+            "B_mean":mean_B,"A_mean":mean_A,"M_mean":mean_M}
     dd.save(fname+".hdf5",data)
 
 def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
@@ -115,6 +125,12 @@ def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
     barnicles_arr=[init_cond[0]*100.0+init_cond[1]*100.0]
     crustose_arr=[init_cond[2]*100.0]
     mussels_arr=[init_cond[3]*100.0]
+    mean_B = np.zeros_like(alpha_array)
+    mean_A = np.zeros_like(alpha_array)
+    mean_M = np.zeros_like(alpha_array)
+    mean_B[0]=np.mean(init_cond[0]*100.0+init_cond[1]*100.0)
+    mean_A[0]=np.mean(init_cond[2]*100.0)
+    mean_M[0]=np.mean(init_cond[3]*100.0)
 #    t_plot_arr=[]
     for i,alpha in enumerate(alpha_array[1:]):
         print("Calculating for alpha=",alpha)
@@ -122,6 +138,9 @@ def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
         barnicles=(result[:,0]+result[:,1])[trim:]*100.0
         crustose=(result[:,2])[trim:]*100.0
         mussels=(result[:,3])[trim:]*100.0
+        mean_B[i+1]=np.mean(barnicles)
+        mean_A[i+1]=np.mean(crustose)
+        mean_M[i+1]=np.mean(mussels)
         t_plot,barnicles_minimas,barnicles=find_min_max(tspan,barnicles,trim)
         t_plot,crustose_minimas,crustose=find_min_max(tspan,crustose,trim)
         t_plot,mussels_minimas,mussels=find_min_max(tspan,mussels,trim)
@@ -136,7 +155,8 @@ def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
     data = {"alpha":alpha_array,
             "B":barnicles_arr,
             "C":crustose_arr,
-            "M":mussels_arr}
+            "M":mussels_arr,
+            "B_mean":mean_B,"A_mean":mean_A,"M_mean":mean_M}
     dd.save(fname+".hdf5",data)
 
 
