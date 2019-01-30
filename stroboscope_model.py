@@ -65,12 +65,14 @@ def find_min_max(tspan,result,trim):
     minimas = zero_crossings[np.where(series_ddt_zero_crossings>=0)[0]]
     return t_plot[zero_crossings_idx]/365,minimas,maximas
 
-def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20):
+def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20,version):
     step=0.1
     int_finish=int(60*365)
     trim=int(40*365)
     #finish = int(int_finish*1.0)
-    m = BenincaModel(Es=Es_normal,Ps=Ps_normal,Vs=None)
+    Es = Es_normal.copy()
+    Es['rhs']=version
+    m = BenincaModel(Es=Es,Ps=Ps,Vs=None)
     Tmax_array = np.linspace(m.p['Tmean'],Tmax_max,resolution)
     init_cond = calc_for_constant(m)
     barnicles_arr=[init_cond[0]*100.0+init_cond[1]*100.0]
@@ -111,7 +113,7 @@ def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20):
             "B_mean":mean_B,"A_mean":mean_A,"M_mean":mean_M}
     dd.save(fname+".hdf5",data)
 
-def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
+def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20,version):
     step=0.1
     int_finish=int(60*365)
     trim=int(40*365)
@@ -119,7 +121,9 @@ def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
     Ps=dd.load(Ps_normal)
     Ps['Tmax']=Tmax
     Ps['alpha']=0.0
-    m = BenincaModel(Es=Es_normal,Ps=Ps,Vs=None)
+    Es = Es_normal.copy()
+    Es['rhs']=version
+    m = BenincaModel(Es=Es,Ps=Ps,Vs=None)
     alpha_array = np.linspace(0,1.0,resolution)
     init_cond = calc_for_constant(m)
     barnicles_arr=[init_cond[0]*100.0+init_cond[1]*100.0]
@@ -236,14 +240,17 @@ def main(args):
                               args.resolution,args.Tmax_index)
     elif args.bif_B_min_max_to_Tmax:
         bif_B_min_max_to_Tmax(args.Tmax_max,args.ito,
-                              args.resolution,args.fname)
+                              args.resolution,args.fname,args.model_version)
     elif args.bif_B_min_max_to_alpha:
         bif_B_min_max_to_alpha(args.Tmax,args.ito,
-                               args.resolution,args.fname)
+                               args.resolution,args.fname,args.model_version)
     elif args.plot_ito_integration:
         plot_ito_integration(args.Tmax,args.alpha,args.ito,
                              args.max_time,args.trim,
                              args.step,args.figsize,args.model_version)
+    else:
+        print("No such option")
+    return 0
 
 
 def add_parser_arguments(parser):
