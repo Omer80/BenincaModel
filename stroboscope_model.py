@@ -71,6 +71,7 @@ def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,
     int_finish=int(60*365)
     trim=int(40*365)
     #finish = int(int_finish*1.0)
+    Ps=dd.load(Ps_normal)
     Es = Es_normal.copy()
     Es['rhs']=version
     m = BenincaModel(Es=Es,Ps=Ps,Vs=None)
@@ -242,10 +243,12 @@ def main(args):
                               args.resolution,args.Tmax_index)
     elif args.bif_B_min_max_to_Tmax:
         bif_B_min_max_to_Tmax(args.Tmax_max,args.ito,
-                              args.resolution,args.fname,args.model_version)
+                              args.resolution,args.fname,
+                              args.max_samples,args.model_version)
     elif args.bif_B_min_max_to_alpha:
         bif_B_min_max_to_alpha(args.Tmax,args.ito,
-                               args.resolution,args.fname,args.model_version)
+                               args.resolution,args.fname,
+                               args.max_samples,args.model_version)
     elif args.plot_ito_integration:
         plot_ito_integration(args.Tmax,args.alpha,args.ito,
                              args.max_time,args.trim,
@@ -346,6 +349,11 @@ def add_parser_arguments(parser):
                         type=int,
                         default=100,
                         help='Resolution of Tmax array')
+    parser.add_argument('--max_samples',
+                        dest='max_samples',
+                        type=int,
+                        default=20,
+                        help='Maximum samples per continuation parameter value')
     return parser
 
 if __name__ == '__main__':
