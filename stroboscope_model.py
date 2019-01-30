@@ -255,7 +255,7 @@ def main(args):
                                args.resolution,args.fname,
                                args.max_samples,args.model_version)
     elif args.plot_ito_integration:
-        plot_ito_integration(args.Tmax,args.alpha,args.ito,
+        plot_ito_integration(args.init_cond,args.Tmax,args.alpha,args.ito,
                              args.max_time,args.trim,
                              args.step,args.figsize,args.model_version)
     else:
