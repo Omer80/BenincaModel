@@ -65,7 +65,8 @@ def find_min_max(tspan,result,trim):
     minimas = zero_crossings[np.where(series_ddt_zero_crossings>=0)[0]]
     return t_plot[zero_crossings_idx]/365,minimas,maximas
 
-def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20,version):
+def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,
+                          max_samples=20,version="Beninca_forced"):
     step=0.1
     int_finish=int(60*365)
     trim=int(40*365)
@@ -113,7 +114,8 @@ def bif_B_min_max_to_Tmax(Tmax_max,ito,resolution,fname,max_samples=20,version):
             "B_mean":mean_B,"A_mean":mean_A,"M_mean":mean_M}
     dd.save(fname+".hdf5",data)
 
-def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20,version):
+def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,
+                           max_samples=20,version="Beninca_forced"):
     step=0.1
     int_finish=int(60*365)
     trim=int(40*365)
