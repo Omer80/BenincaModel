@@ -160,11 +160,13 @@ def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,max_samples=20):
     dd.save(fname+".hdf5",data)
 
 
-def integrate_from_steady_state(alpha,Tmax,ito,idx_finish,step):
+def integrate_from_steady_state(alpha,Tmax,ito,idx_finish,step,version):
     Ps=dd.load(Ps_normal)
     Ps['Tmax']=Tmax
     Ps['alpha']=0.0
-    m = BenincaModel(Es=Es_normal,Ps=Ps,Vs=None)
+    Es = Es_normal.copy()
+    Es['rhs']=version
+    m = BenincaModel(Es=Es,Ps=Ps,Vs=None)
     init_cond = calc_for_constant(m)
     print("Initial condition:",init_cond)
     print("Integrating with SDEINT")
@@ -172,10 +174,10 @@ def integrate_from_steady_state(alpha,Tmax,ito,idx_finish,step):
     forcing_tspan = m.Ft(tspan)
     return tspan,result,forcing,forcing_tspan
 
-def plot_ito_integration(Tmax,alpha,ito,max_time,trim,step,figsize):
+def plot_ito_integration(Tmax,alpha,ito,max_time,trim,step,figsize,version):
     import matplotlib.pyplot as plt
     idx_finish=int(max_time*365)
-    tspan,result,forcing,forcing_tspan=integrate_from_steady_state(alpha,Tmax,ito,idx_finish,step)
+    tspan,result,forcing,forcing_tspan=integrate_from_steady_state(alpha,Tmax,ito,idx_finish,step,version)
 #    idx_trim=int(trim*365)
     #finish = int(int_finish*1.0)
     fig,ax=plt.subplots(1,2,figsize=(figsize*1.618,figsize),constrained_layout=True)
@@ -241,7 +243,7 @@ def main(args):
     elif args.plot_ito_integration:
         plot_ito_integration(args.Tmax,args.alpha,args.ito,
                              args.max_time,args.trim,
-                             args.step,args.figsize)
+                             args.step,args.figsize,args.model_version)
 
 
 def add_parser_arguments(parser):
@@ -250,6 +252,11 @@ def add_parser_arguments(parser):
                         dest="fname",
                         default="Beninca_stroboscope_i_",
                         help="Save p_transition to chi in fname")
+    parser.add_argument("--model_version",
+                        type=str, nargs='?',
+                        dest="model_version",
+                        default="Beninca_forced",
+                        help="Beninca model version")
     parser.add_argument("-v", "--verbose",
                         action="store_true",
                         dest="verbose",

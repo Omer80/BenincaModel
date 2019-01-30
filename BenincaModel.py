@@ -38,7 +38,7 @@ from scipy.fftpack import fftn, ifftn
 #from utilities import handle_netcdf as hn
 import deepdish.io as dd
 
-Es_normal={'rhs':"Beninca_forced_logistic",
+Es_normal={'rhs':"Beninca_forced_log1",
         'n':(1024,),
         'l':(256.0,),
         'bc':"neumann",
@@ -119,7 +119,17 @@ class BenincaModel(object):
             self.dAdt_eq  = p['cAR']*A*R+p['cAB']*A*B0-p['cM']*M*A-Ft*p['mA']*A
             self.dMdt_eq  = p['cM']*M*(B0+A)-Ft*p['mM']*M
             self.Ft_sym=Ft
-        if self.setup['rhs']=="Beninca_forced_logistic":
+        if self.setup['rhs']=="Beninca_forced_log1":
+            """ Klausmeier Model """
+            from sympy.functions import cos as symcos
+            Ft=(1.0+p['alpha']*(p['Tmax']-p['Tmean'])*symcos(2.0*np.pi*(t-32.0)/365.0))
+            R = 1.0 - B0 - A - M
+            self.dB0dt_eq = p['cBR']*(B0+BA)*R-p['cAB']*A*B0-p['cM']*M*B0-p['mB']*B0+Ft*p['mA']*BA
+            self.dBAdt_eq = p['cAB']*A*B0-p['cM']*M*BA-p['mB']*BA-Ft*p['mA']*BA
+            self.dAdt_eq  = (p['cAR']*A*R+p['cAB']*A*B0-p['cM']*M*A-Ft*p['mA']*A)*(1.0-A)
+            self.dMdt_eq  = (p['cM']*M*(B0+A)-Ft*p['mM']*M)*(1.0-M)
+            self.Ft_sym=Ft
+        if self.setup['rhs']=="Beninca_forced_log4":
             """ Klausmeier Model """
             from sympy.functions import cos as symcos
             Ft=(1.0+p['alpha']*(p['Tmax']-p['Tmean'])*symcos(2.0*np.pi*(t-32.0)/365.0))
