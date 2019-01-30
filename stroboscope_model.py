@@ -11,7 +11,7 @@ import sdeint
 from scipy.signal import find_peaks
 from BenincaModel import BenincaModel,Es_normal
 import deepdish.io as dd
-Ps_normal='auto/Beninca_set3.hdf5'
+Ps_normal='auto/Beninca_set4.hdf5'
 
 def calc_for_constant(m):
     t,sol_const = m.ode_integrate([0.1,0.1,0.1,0.1])
@@ -167,24 +167,29 @@ def bif_B_min_max_to_alpha(Tmax,ito,resolution,fname,
     dd.save(fname+".hdf5",data)
 
 
-def integrate_from_steady_state(alpha,Tmax,ito,idx_finish,step,version):
+def integrate_from_steady_state(init_cond,alpha,Tmax,ito,idx_finish,step,version):
     Ps=dd.load(Ps_normal)
     Ps['Tmax']=Tmax
     Ps['alpha']=0.0
     Es = Es_normal.copy()
     Es['rhs']=version
     m = BenincaModel(Es=Es,Ps=Ps,Vs=None)
-    init_cond = calc_for_constant(m)
+    if init_cond==0:
+        init_cond = calc_for_constant(m)
+    elif init_cond==1:
+        init_cond = np.array([0.103,0.019,0.033,0.040])
+    elif init_cond==2:
+        init_cond = np.array([0.8,0.1,0.05,0.1])
     print("Initial condition:",init_cond)
     print("Integrating with SDEINT")
     tspan,result,forcing=calc_for_oscillation_with_Ito(m,init_cond,alpha,Tmax,ito,idx_finish,step)
     forcing_tspan = m.Ft(tspan)
     return tspan,result,forcing,forcing_tspan
 
-def plot_ito_integration(Tmax,alpha,ito,max_time,trim,step,figsize,version):
+def plot_ito_integration(init_cond,Tmax,alpha,ito,max_time,trim,step,figsize,version):
     import matplotlib.pyplot as plt
     idx_finish=int(max_time*365)
-    tspan,result,forcing,forcing_tspan=integrate_from_steady_state(alpha,Tmax,ito,idx_finish,step,version)
+    tspan,result,forcing,forcing_tspan=integrate_from_steady_state(init_cond,alpha,Tmax,ito,idx_finish,step,version)
 #    idx_trim=int(trim*365)
     #finish = int(int_finish*1.0)
     fig,ax=plt.subplots(1,2,figsize=(figsize*1.618,figsize),constrained_layout=True)
@@ -354,6 +359,11 @@ def add_parser_arguments(parser):
                         type=int,
                         default=20,
                         help='Maximum samples per continuation parameter value')
+    parser.add_argument('--init_cond',
+                        dest='init_cond',
+                        type=int,
+                        default=0,
+                        help='Initial condition for integration, zero if integration for constant temperature')
     return parser
 
 if __name__ == '__main__':
